@@ -1,0 +1,46 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":disableDependencyDashboard",
+    ":semanticCommitTypeAll(fix)",
+    ":disableRateLimiting"
+  ],
+  "separateMajorMinor": false,
+  "regexManagers": [
+    {
+      "fileMatch": ["plan-.*\\.yaml$"],
+      "datasourceTemplate": "github-releases",
+      "matchStrings": [
+        "version: (?<currentValue>.*?)\\n"
+      ],
+      "depNameTemplate": "rancher/rke2"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["rancher/rke2"],
+      "versioning": "regex:^v1\\.(?<major>\\d+)\\.(?<minor>\\d+)(:?-?(?<prerelease>.*)?)\\+rke2r(?<patch>\\d+)\\n?$"
+    },
+
+    {
+      "matchUpdateTypes": ["minor"],
+      "extends": [
+        ":semanticCommitTypeAll(feat)"
+      ]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "commitBody": "BREAKING CHANGE: new upstream major version",
+      "extends": [
+        ":semanticCommitTypeAll(feat)"
+      ]
+    },
+    {
+      "matchManagers": "gitlabci-include",
+      "extends": [
+        ":semanticCommitTypeAll(chore)"
+      ]
+    }
+  ]
+}

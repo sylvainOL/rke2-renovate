@@ -1,0 +1,35 @@
+---
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  labels:
+    rke2-upgrade: agent
+  name: agent-plan
+  namespace: system-upgrade
+spec:
+  concurrency: 1
+  cordon: true
+  drain:
+    force: true
+  nodeSelector:
+    matchExpressions:
+    - key: rke2-upgrade
+      operator: Exists
+    - key: rke2-upgrade
+      operator: NotIn
+      values:
+      - disabled
+      - 'false'
+    - key: node-role.kubernetes.io/control-plane
+      operator: NotIn
+      values:
+      - 'true'
+  prepare:
+    args:
+    - prepare
+    - server-plan
+    image: rancher/rke2-upgrade
+  serviceAccountName: system-upgrade
+  upgrade:
+    image: rancher/rke2-upgrade
+  version: v1.23.4+rke2r1
